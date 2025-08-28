@@ -30,7 +30,7 @@ class TranslationController extends AbstractController
         return $this->localeMapping[$language] ?? null;
     }
 
-    /**
+        /**
      * Returns translator service usage statistics
      *
      * @return Response
@@ -48,9 +48,9 @@ class TranslationController extends AbstractController
      *
      * @return Response
      */
-    public function postTranslateAction(Request $request)
+        public function postTranslateAction(Request $request)
     {
-        $text = $request->request->get('text');
+                        $text = $request->request->get('text');
 
         if (!$text || empty($text)) {
             return new JsonResponse([
@@ -68,15 +68,20 @@ class TranslationController extends AbstractController
             ]);
         }
 
+        try {
+            $result = $this->translatorService->translateText($text, $source, $target, [
+                "tag_handling" => "html"
+            ]);
 
-        $result = $this->translatorService->translateText($text, $source, $target, [
-            "tag_handling" => "html"
-        ]);
-
-        if (!$result || !$result->text) {
+            if (!$result || !$result->text) {
+                return new JsonResponse([
+                    "error" => "Translation failed: API error (missing credentials?)"
+                ], 400);
+            }
+        } catch (\Exception $e) {
             return new JsonResponse([
-                "error" => "Translation failed: API error (missing credentials?)"
-            ], 400);
+                "error" => "Translation failed: " . $e->getMessage()
+            ], 500);
         }
 
         return new JsonResponse([

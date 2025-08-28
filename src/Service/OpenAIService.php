@@ -14,26 +14,28 @@ class OpenAIService implements TranslatorInterface
         private readonly string $openaiApiKey,
         private readonly string $model = 'gpt-4-turbo',
         private readonly string $context = ''
-    ) {
+        ) {
         $this->client = OpenAI::client($this->openaiApiKey);
     }
 
-    public function translateText(string $text, ?string $source, string $target, array $options = []): object
+                public function translateText(string $text, ?string $source, string $target, array $options = []): object
     {
         $sourceText = $source ? "from {$source} " : '';
-        $basePrompt = "Translate the following text {$sourceText}to {$target}. Preserve all HTML tags and formatting exactly as they appear.";
 
-        // Add custom context/instructions if provided
+        // Use context as the primary system prompt if provided, otherwise use default
         if (!empty($this->context)) {
-            $basePrompt .= " " . $this->context . ".";
+            $systemPrompt = $this->context;
+            $userPrompt = "Translate the following text {$sourceText}to {$target}:\n\n{$text}";
+        } else {
+            $systemPrompt = "You are a skilled translator. Translate text accurately while preserving all HTML tags and formatting exactly as they appear.";
+            $userPrompt = "Translate the following text {$sourceText}to {$target}. Only return the translated text without any additional explanations:\n\n{$text}";
         }
-
-        $prompt = "{$basePrompt} Only return the translated text without any additional explanations:\n\n{$text}";
 
         $response = $this->client->chat()->create([
             'model' => $this->model,
             'messages' => [
-                ['role' => 'user', 'content' => $prompt],
+                ['role' => 'system', 'content' => $systemPrompt],
+                ['role' => 'user', 'content' => $userPrompt],
             ],
             'temperature' => 0.3,
         ]);
