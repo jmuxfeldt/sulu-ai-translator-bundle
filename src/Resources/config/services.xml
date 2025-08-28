@@ -14,9 +14,23 @@
             <tag name="sulu.context" context="admin" />
         </service>
 
+        <!-- DeepL Service -->
         <service id="ai_translator.deepl_service"
-            class="Robole\SuluAITranslatorBundle\Service\DeeplService" public="true">
+            class="Robole\SuluAITranslatorBundle\Service\DeeplService">
             <argument>%sulu_ai_translator.deepl_api_key%</argument>
         </service>
+
+        <!-- OpenAI Service -->
+        <service id="ai_translator.openai_service"
+            class="Robole\SuluAITranslatorBundle\Service\OpenAIService">
+            <argument>%sulu_ai_translator.openai_api_key%</argument>
+            <argument>%sulu_ai_translator.openai_model%</argument>
+            <argument>%sulu_ai_translator.openai_context%</argument>
+        </service>
+
+                <!-- Active Translator Service (will be set by compiler pass) -->
+        <service id="ai_translator.translator_service"
+            alias="ai_translator.deepl_service"
+            public="true" />
     </services>
 </container>

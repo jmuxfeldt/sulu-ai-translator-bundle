@@ -4,7 +4,7 @@ namespace Robole\SuluAITranslatorBundle\Service;
 
 use DeepL\Translator;
 
-class DeeplService
+class DeeplService implements TranslatorInterface
 {
     private Translator $client;
 

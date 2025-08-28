@@ -1,6 +1,6 @@
 {
     "name": "robole/sulu-ai-translator-bundle",
-    "description": "Translate any type of content using DeepL",
+    "description": "Translate any type of content using DeepL or OpenAI GPT-4",
     "type": "symfony-bundle",
     "require": {
         "php": "^8.2",
@@ -13,7 +13,8 @@
         "symfony/intl": "^6.2 | ^7.0",
         "symfony/translation": "^6.2 | ^7.0",
         "symfony/security-core": "^6.3 | ^7.0",
-        "deeplcom/deepl-php": "^1.7"
+        "deeplcom/deepl-php": "^1.7",
+        "openai-php/client": "^0.8"
     },
     "homepage": "https://github.com/robole-dev/sulu-ai-translator-bundle",
     "license": "MIT",

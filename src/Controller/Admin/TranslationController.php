@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Robole\SuluAITranslatorBundle\Controller\Admin;
 
-use Robole\SuluAITranslatorBundle\Service\DeeplService;
+use Robole\SuluAITranslatorBundle\Service\TranslatorInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class TranslationController extends AbstractController
 {
     public function __construct(
-        private DeeplService $deeplService,
+        private TranslatorInterface $translatorService,
         private ViewHandlerInterface $viewHandler,
         private array $localeMapping
     ) {
@@ -22,7 +22,7 @@ class TranslationController extends AbstractController
 
     /**
      * Returns ISO 3166-1 compatible language key from bundle configuration
-     * 
+     *
      * @see https://developers.deepl.com/docs/resources/supported-languages#target-languages
      */
     private function getLanguageKey(?string $language): ?string
@@ -31,22 +31,18 @@ class TranslationController extends AbstractController
     }
 
     /**
-     * Returns DeepL account usage statistics
-     * 
-     * @see https://github.com/DeepLcom/deepl-php?tab=readme-ov-file#checking-account-usage
-     * 
+     * Returns translator service usage statistics
+     *
      * @return Response
      */
     public function getTranslateUsageAction()
     {
-        return new JsonResponse($this->deeplService->getUsage());
+        return new JsonResponse($this->translatorService->getUsage());
     }
 
     /**
-     * Translate text from source to target language using DeepL API.
-     * Translation has to be done in backend due to DeepL restrictions.
-     * 
-     * @see https://github.com/DeepLcom/deepl-php?tab=readme-ov-file#translating-text
+     * Translate text from source to target language using configured translator service.
+     * Translation is done in backend for security and API key protection.
      *
      * @param Request $request
      *
@@ -73,13 +69,13 @@ class TranslationController extends AbstractController
         }
 
 
-        $result = $this->deeplService->translateText($text, $source, $target, [
+        $result = $this->translatorService->translateText($text, $source, $target, [
             "tag_handling" => "html"
         ]);
 
         if (!$result || !$result->text) {
             return new JsonResponse([
-                "error" => "Translation failed: DeepL API error (missing credentials?)"
+                "error" => "Translation failed: API error (missing credentials?)"
             ], 400);
         }
 

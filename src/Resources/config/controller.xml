@@ -7,7 +7,7 @@
 
         <service id="Robole\SuluAITranslatorBundle\Controller\Admin\TranslationController"
             public="true">
-            <argument type="service" id="ai_translator.deepl_service" />
+            <argument type="service" id="ai_translator.translator_service" />
             <argument type="service" id="fos_rest.view_handler.default" />
             <argument>%sulu_ai_translator.locale_mapping%</argument>
 
